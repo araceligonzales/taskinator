@@ -2,6 +2,7 @@
 var formEl = document.querySelector("#task-form");
 var tasksTodoEl = document.querySelector("#tasks-to-do");
 var taskIdCounter = 0;
+var pageContentEl = document.querySelector("#page-content")
 //the task handler function tells the page WHAT to do after its listener is triggered
 //and must be defined first.
 var taskFormHandler = function(event){
@@ -98,5 +99,44 @@ var createTaskEl = function(taskDataObj){
      taskIdCounter++
 }
 
+var editTask = function(taskId){
+    var taskSelected= document.querySelector(".task-item[data-task-id='" + taskId + "']");
+// get content from task name and type
+var taskName = taskSelected.querySelector("h3.task-name").textContent;
+console.log(taskName);
+
+var taskType = taskSelected.querySelector("span.task-type").textContent;
+console.log(taskType);
+
+document.querySelector("input[name='task-name']").value = taskName;
+document.querySelector("select[name='task-type']").value = taskType;
+document.querySelector("#save-task").textContent="Save Task";
+formEl.setAttribute("data-task-id", taskId);
+};
+
+var deleteTask = function(taskId){
+var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+        taskSelected.remove();
+      };
+
+var taskButtonHandler = function(event){
+//get target elements from event
+var targetEl = event.target;
+
+//edit button was clicked 
+if (targetEl.matches(".edit-btn")){
+    var taskId = targetEl.getAttribute("data-task-id");
+    editTask(taskId)
+}
+
+//delete button gets clicked 
+else if(targetEl.matches(".delete-btn")){
+    //get elements task id
+    var taskId = targetEl.getAttribute("data-task-id");
+    deleteTask(taskId);
+}
+};
+
+pageContentEl.addEventListener("click", taskButtonHandler);
 //this is what the webpage is looking to see if it will happen aka the trigger.
 formEl.addEventListener("submit", taskFormHandler);
