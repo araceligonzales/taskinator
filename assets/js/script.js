@@ -1,6 +1,8 @@
 //these variables link the elements from the html
 var formEl = document.querySelector("#task-form");
 var tasksTodoEl = document.querySelector("#tasks-to-do");
+var tasksInProgressEl = document.querySelector("#tasks-in-progress");
+var tasksCompletedEl = document.querySelector("#tasks-completed");
 var taskIdCounter = 0;
 var pageContentEl = document.querySelector("#page-content")
 //the task handler function tells the page WHAT to do after its listener is triggered
@@ -12,6 +14,7 @@ var taskFormHandler = function(event){
     
     var taskNameInput = document.querySelector("input[name='task-name'").value;
     var taskTypeInput = document.querySelector("select[name='task-type'").value;
+    var isEdit = formEl.hasAttribute("data-task-id");
 //package data as object
 var taskDataObj = {
     name: taskNameInput,
@@ -28,8 +31,47 @@ var taskDataObj = {
 
 
 //send as argument to createTaskEl
-createTaskEl(taskDataObj);
-   
+if (isEdit) {
+    var taskId = formEl.getAttribute("data-task-id");
+    completeEditTask(taskNameInput, taskTypeInput, taskId);
+}
+else {
+    var taskDataObj = {
+        name: taskNameInput,
+        type: taskTypeInput
+    };
+    createTaskEl(taskDataObj);
+}
+};
+
+var completeEditTask = function(taskName, taskType, taskId) {
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+
+    taskSelected.querySelector("h3.task-name").textContent = taskName;
+    taskSelected.querySelector("span.task-type").textContent = taskType;
+
+    alert("task updated");
+    formEl.removeAttribute("data-task-id");
+    document.querySelector("#save-task").textContent = "Add Task";
+}
+
+var taskStatusChangeHandler = function(event) {
+console.log(event.target, event.target.getAttribute("data-task-id"));
+    var taskId = event.target.getAttribute("data-task-id");
+
+    var statusValue = event.target.value.toLowerCase();
+
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+
+    if (statusValue === "to do") {
+        tasksTodoEl.appendChild(taskSelected);
+    }
+    else if (statusValue === "in progress") {
+        tasksInProgressEl.appendChild(taskSelected);
+    }
+    else if (statusValue === "completed") {
+        tasksCompletedEl.appendChild(taskSelected)
+    }
 };
 
 var createTaskActions = function(taskId){
@@ -137,6 +179,8 @@ else if(targetEl.matches(".delete-btn")){
 }
 };
 
-pageContentEl.addEventListener("click", taskButtonHandler);
 //this is what the webpage is looking to see if it will happen aka the trigger.
+
+pageContentEl.addEventListener("click", taskButtonHandler);
 formEl.addEventListener("submit", taskFormHandler);
+pageContentEl.addEventListener("change", taskStatusChangeHandler);
