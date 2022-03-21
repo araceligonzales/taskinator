@@ -9,12 +9,16 @@ var tasks = [];
 //the task handler function tells the page WHAT to do after its listener is triggered
 //and must be defined first.
 var taskFormHandler = function(event){
-    
  //the event argument tells the browser to NOT do its usual behavior
     event.preventDefault();
-    
     var taskNameInput = document.querySelector("input[name='task-name'").value;
     var taskTypeInput = document.querySelector("select[name='task-type'").value;
+    
+  //check if input values are empty strings
+    if(!taskNameInput || !taskTypeInput) {
+    alert("You need to fill out the task form!");
+    return false;
+}
     var isEdit = formEl.hasAttribute("data-task-id");
 //package data as object
 var taskDataObj = {
@@ -23,11 +27,6 @@ var taskDataObj = {
     status: "to do"
 };
 
-  //check if input values are empty strings
-    if(!taskNameInput || !taskTypeInput) {
-    alert("You need to fill out the task form!");
-    return false;
-}
 
 formEl.reset();
 
@@ -210,8 +209,23 @@ var saveTasks = function(){
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-//this is what the webpage is looking to see if it will happen aka the trigger.
+var loadTasks = function() {
+    var savedTasks = localStorage.getItem("tasks");
+    if(!savedTasks) {
+        return false;
+    }
+    console.log("Saved tasks found!");
+    
+    savedTasks = JSON.parse(savedTasks);
+    
+    for(var i = 0; i < savedTasks.length; i++) {
+        createTaskEl(savedTasks[i]);
+    }
+};
 
-pageContentEl.addEventListener("click", taskButtonHandler);
+//this is what the webpage is looking to see if it will happen aka the trigger.
 formEl.addEventListener("submit", taskFormHandler);
+pageContentEl.addEventListener("click", taskButtonHandler);
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+
+loadTasks();
