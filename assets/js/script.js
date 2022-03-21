@@ -58,6 +58,7 @@ var completeEditTask = function(taskName, taskType, taskId) {
             tasks[i].type = taskType;
         }
     };
+    saveTasks();
 
     alert("Task updated");
     formEl.removeAttribute("data-task-id");
@@ -86,6 +87,7 @@ console.log(event.target, event.target.getAttribute("data-task-id"));
             tasks[i].status = statusValue;
         }
     }
+    saveTasks();
 };
 
 var createTaskActions = function(taskId){
@@ -151,7 +153,7 @@ var createTaskEl = function(taskDataObj){
     tasksTodoEl.appendChild(listItemEl);
     taskDataObj.id = taskIdCounter;
     tasks.push(taskDataObj);
-
+    saveTasks();
      //increase task counter for next unique id
     taskIdCounter++
 }
@@ -183,6 +185,7 @@ var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId +
         }
     }
     tasks = updatedTaskArr;
+    saveTasks();
 };
 
 var taskButtonHandler = function(event){
@@ -202,6 +205,10 @@ else if(targetEl.matches(".delete-btn")){
     deleteTask(taskId);
 }
 };
+
+var saveTasks = function(){
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
 //this is what the webpage is looking to see if it will happen aka the trigger.
 
